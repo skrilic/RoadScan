@@ -1,7 +1,7 @@
 from Tkinter import *
+import ttk
 import tkFileDialog
 import tkMessageBox
-import ttk
 import threading
 import Queue
 import os
