@@ -1,8 +1,5 @@
 import gpsbabel
 
-__author__="slaven"
-
-
 class Gpsmgr:
     """
     Handling gpsbabel command get_posn. This way it is possible to get latitude,
@@ -20,19 +17,19 @@ class Gpsmgr:
 
 
     def getpos(self):
-        gpsbbl=gpsbabel.GPSBabel()
-        position=gpsbbl.getCurrentGpsLocation(self.port, self.gps_type)
+        gpsbbl = gpsbabel.GPSBabel()
+        position = gpsbbl.getCurrentGpsLocation(self.port, self.gps_type)
         for element in position:
-            elm=element.split(' ')
+            elm = element.split(' ')
             if elm[0] == '<None':
-                lat=elm[1].strip('"').strip('lat="')
-                long=elm[2].strip('">').strip('lon="')
-        return "%s,%s" % (lat,long) #by using gpsbabel
+                lat = elm[1].strip('"').strip('lat="')
+                long = elm[2].strip('">').strip('lon="')
+        return "%s,%s" % (lat, long)  #by using gpsbabel
 
     def getgpstime(self):
-        gpsbbl=gpsbabel.GPSBabel()
-        position=gpsbbl.getCurrentGpsLocation(self.port, self.gps_type)
+        gpsbbl = gpsbabel.GPSBabel()
+        position = gpsbbl.getCurrentGpsLocation(self.port, self.gps_type)
         for element in position:
             if element.find('<time>') != -1:
-                datetime=element.strip('<time>').strip('</time>')
-        return datetime #by using gpsbabel
+                datetime = element.strip('<time>').strip('</time>')
+        return datetime  #by using gpsbabel

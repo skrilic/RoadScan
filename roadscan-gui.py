@@ -1,14 +1,18 @@
-from Tkinter import *
+from tkinter import *
 import ttk
-import tkFileDialog
-import tkMessageBox
+from tkinter import filedialog as tkFileDialog
+from tkinter import messagebox as tkMessageBox
+# import tkFileDialog
+# import tkMessageBox
 import threading
-import Queue
+import queue as Queue
 import os
-import ConfigParser as configparser
+import configparser
 from measurements.mobile import *
-from devices.Garmin import Gpsmgr
+# from devices.GpsDevice import GpsMgr
 import matplotlib.pyplot as plt
+import gps
+import threading
 import time
 
 magnitude_unit = {
@@ -24,6 +28,24 @@ magnitude_unit = {
 }
 
 
+gpsd = None
+gpsp = None
+
+class GpsMgr(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        global gpsd  # bring it in scope
+        gpsd = gps(mode=WATCH_ENABLE)  # starting the stream of info
+        self.current_value = None
+        self.running = True  # setting the thread running to true
+
+    def run(self):
+        global gpsd
+        while gpsp.running:
+            gpsd.next()  # this will continue to loop and grab EACH set of gpsd info to clear the buffer
+
+
+
 # Variable to control working Loop from GUI
 wt1_running = False
 
@@ -33,10 +55,10 @@ measconf = "./conf/default.ini"
 audio_switch = 0
 gpsmodel = 'garmin'
 measEq = None
-app_cwd = os.getcwd() # Find Current dir
+app_cwd = os.getcwd()  # Find Current dir
 sound_file = "{}/{}".format(app_cwd, "/sounds/Electronic_Chime.wav")
-directory = '%s/data' % app_cwd # Output results folder
-sleep = 0 # Sleep between measurements cycles
+directory = '%s/data' % app_cwd  # Output results folder
+sleep = 0  # Sleep between measurements cycles
 
 # Output values
 frequencies = list()
@@ -311,10 +333,14 @@ class RoadscanGui:
                 mylocation = "0.000000,0.000000"
             else:
                 print("Info: Trying to connect with GPS!")
-                mygps = Gpsmgr(port, type)
+                # mygps = Gpsmgr(port, type)
+                mygps = GpsMgr()
+                mygps.start()
                 try:
                     print("Info: Reading GPS position!")
-                    mylocation = mygps.getpos()
+                    # mylocation = mygps.getpos()
+                    gpsd.data
+                    mylocation = "{},{}".format(gpsd.fix.latitude. gpsd.fix.longitude)
                 except:
                     print("Info: Cannot connect to GPS!")
                     mylocation = "0.000000,0.000000"

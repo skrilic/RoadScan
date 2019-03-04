@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from devices.FSH6 import FSH6
-from devices.Garmin import Gpsmgr
-import ConfigParser as configparser
+# from devices.Garmin import Gpsmgr
+import configparser
 
 
 magnitude_unit = {

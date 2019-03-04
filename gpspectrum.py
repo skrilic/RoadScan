@@ -12,7 +12,7 @@ matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import numpy as np
 
-import ConfigParser as configparser
+import configparser
 #from string import Template
 import os
 import threading
