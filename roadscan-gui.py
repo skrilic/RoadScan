@@ -15,6 +15,7 @@ import gps
 import threading
 import time
 
+
 magnitude_unit = {
     '0': 'dBm',
     '1': 'dBmV',
