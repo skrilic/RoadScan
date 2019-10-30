@@ -27,25 +27,28 @@ class FSH6:
 
     # FSH6 Types of commands and handling different responses
     def getcmd(self,cmd):
-        self.fsh.write('GET\r')
+        strget = 'GET\r'
+        self.fsh.write(strget.encode())
         #response
-        self.fsh.write('{}'.format(cmd))
+        self.fsh.write(cmd)
         #response
         return
 
 
     def setcmd(self,cmd):
-        self.fsh.write('SET\r')
+        setcmd = 'SET\r'
+        self.fsh.write(setcmd.encode())
         #response
-        self.fsh.write('{}'.format(cmd))
+        self.fsh.write(cmd)
         #response
         return
 
 
     def cmd(self,cmd):
-        self.fsh.write('CMD\r')
+        strcmd = 'CMD\r'
+        self.fsh.write(strcmd.encode())
         #response
-        self.fsh.write('{}\r'.format(cmd))
+        self.fsh.write(cmd)
         #response
         return
 
@@ -63,32 +66,33 @@ class FSH6:
         freqcentral = (fstop+fstart)/2
         freqspan = (fstop-fstart)
         ##---------------------------
-        self.cmd('REMOTE')
+        self.cmd('REMOTE'.encode())
         #self.setcmd('MEAS,1') # Analyzer mode
         if reset:
             self.cmd('PRESET\r')
             time.sleep(1)
-        self.setcmd('FREQ,{}\r'.format(freqcentral))
-        self.setcmd('SPAN,{}\r'.format(freqspan))
-        self.setcmd('SWPTIME,{}\r'.format(fshconfig['sweep_time']))
-        self.setcmd('SWPCONT,{}\r'.format(fshconfig['sweep_continous']))
+        self.setcmd(('FREQ,{}\r'.format(freqcentral)).encode())
+        self.setcmd(('SPAN,{}\r'.format(freqspan)).encode())
+        self.setcmd(('SWPTIME,{}\r'.format(fshconfig['sweep_time'])).encode())
+        self.setcmd(('SWPCONT,{}\r'.format(fshconfig['sweep_continous'])).encode())
         #self.cmd('INIT\r') #Initialize sweep
         #self.cmd('WAIT\r') #Wait for end of sweep
-        self.setcmd('UNIT,{}\r'.format(fshconfig['measurement_unit']))
-        self.setcmd('TRACEMODE,{}\r'.format(fshconfig['trace_mode']))
+        self.setcmd(('UNIT,{}\r'.format(fshconfig['measurement_unit'])).encode())
+        self.setcmd(('TRACEMODE,{}\r'.format(fshconfig['trace_mode'])).encode())
         if fshconfig['trace_mode'] == 1:
-            self.setcmd('TRACEAVG,{}\r'.format(fshconfig['trace_type']))
-        self.setcmd('TRACEDET,{}\r'.format(fshconfig['trace_detector']))
+            self.setcmd(('TRACEAVG,{}\r'.format(fshconfig['trace_type'])).encode())
+        self.setcmd(('TRACEDET,{}\r'.format(fshconfig['trace_detector'])).encode())
         #
-        self.setcmd('RBW,{}\r'.format(fshconfig['rbw']))
-        self.setcmd('VBW,{}\r'.format(fshconfig['vbw']))
-        self.getcmd('TRACE\r')
+        self.setcmd(('RBW,{}\r'.format(fshconfig['rbw'])).encode())
+        self.setcmd(('VBW,{}\r'.format(fshconfig['vbw'])).encode())
+        self.getcmd(('TRACE\r').encode())
 
 
     def getresults(self, newlinechar):
         spectrum = self.fsh.readline()
+        strspectrum = spectrum.decode("utf-8")
         newlist = []
-        for a in spectrum.split(','):
+        for a in strspectrum.split(','):
             b = a.split(newlinechar)
             if b != '' and b != ' ':
                 newlist.append(b[len(b)-1])

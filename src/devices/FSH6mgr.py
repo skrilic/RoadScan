@@ -1,5 +1,5 @@
 import serial
-import ConfigParser as configparser
+import configparser
 import time
 
 __author__="slaven"
