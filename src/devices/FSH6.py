@@ -5,6 +5,12 @@ __author__="slaven"
 
 
 class FSH6:
+    strcmd = 'CMD\r'
+    strlocal = 'LOCAL\r'
+    strget = 'GET\r'
+    strset = 'SET\r'
+    strpreset = 'PRESET\r'
+
     def __init__(self, fshport):
         # self.fshport = fshport
         self.fsh=serial.Serial()
@@ -21,14 +27,13 @@ class FSH6:
         self.fsh.open()
 
     def close(self):
-        self.fsh.write('CMD\r')
-        self.fsh.write('LOCAL\r')
+        self.fsh.write(self.strcmd.encode())
+        self.fsh.write(self.strlocal.encode())
         self.fsh.close()
 
     # FSH6 Types of commands and handling different responses
     def getcmd(self,cmd):
-        strget = 'GET\r'
-        self.fsh.write(strget.encode())
+        self.fsh.write(self.strget.encode())
         #response
         self.fsh.write(cmd)
         #response
@@ -36,8 +41,7 @@ class FSH6:
 
 
     def setcmd(self,cmd):
-        setcmd = 'SET\r'
-        self.fsh.write(setcmd.encode())
+        self.fsh.write(self.strset.encode())
         #response
         self.fsh.write(cmd)
         #response
@@ -45,15 +49,14 @@ class FSH6:
 
 
     def cmd(self,cmd):
-        strcmd = 'CMD\r'
-        self.fsh.write(strcmd.encode())
+        self.fsh.write(self.strcmd.encode())
         #response
         self.fsh.write(cmd)
         #response
         return
 
     def cmd_rest(self):
-        self.cmd('PRESET\r')
+        self.cmd(self.strpreset.encode())
 
     def setmeas( self, fshconfig):
         """
@@ -66,7 +69,7 @@ class FSH6:
         freqcentral = (fstop+fstart)/2
         freqspan = (fstop-fstart)
         ##---------------------------
-        self.cmd('REMOTE'.encode())
+        self.cmd("REMOTE\r".encode())
         #self.setcmd('MEAS,1') # Analyzer mode
         if reset:
             self.cmd('PRESET\r')
