@@ -3,4 +3,10 @@
 *lib/
 *include/
 
+*data/
+
+*.vscode/
+*.idea/
+
+
 
