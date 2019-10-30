@@ -1,4 +1,6 @@
 #pyside
+#python3-tk
+pyttk
 gpsbabel
 pyserial
 #matplotlib
