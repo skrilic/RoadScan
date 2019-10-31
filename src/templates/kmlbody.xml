@@ -1,6 +1,7 @@
                 <Placemark>
-                        <name>$name </name>
-                        <description><![CDATA[<br/><a href="$pathtocsv/$csv"> <img src="$pathtoimage/$spectrum"></a>]]> $desc</description>
+<!--                        <name>$name </name>-->
+                        <description><![CDATA[<br/><a href="$pathtocsv$csv"> <img src="$pathtoimage$spectrum">$name: </a>]]> $desc</description>
+                        <styleUrl>#$markerstyle</styleUrl>
                         <Point>
                             <coordinates>$coords </coordinates>
                         </Point>

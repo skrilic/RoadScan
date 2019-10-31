@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 
-__author__="slaven"
-#__date__ ="$28.05.2010. 10:51:58$"
+__author__ = "slaven"
+# __date__ ="$28.05.2010. 10:51:58$"
 
 import sys
 import os
-import ConfigParser
+import configparser
 from string import Template
 
-tmplvar=""
-tmplplacemark= "templates/kmlbody.xml"
-config = ConfigParser.ConfigParser()
+tmplvar = ""
+tmplplacemark = "templates/kmlbody.xml"
+config = configparser.ConfigParser()
 config.read("conf/kml.ini")
-ptcsv = config.get("webroot","csv")
-ptimg = config.get("webroot","image")
+
+# ptcsv = config.get("webroot","csv")
+# ptimg = config.get("webroot","image")
+ptcsv = ""
+ptimg = ""
+
 
 def file2string(filein):
     """
@@ -21,14 +25,15 @@ def file2string(filein):
     content of the file.
     """
     stringout = ""
-    stringin = open(filein,"r")
+    stringin = open(filein, "r")
     for line in stringin:
         stringout = stringout + line
     return stringout
 
-#for line in tmplplacemark:
+
+# for line in tmplplacemark:
 #    tmplvar = tmplvar + line
-#kmlplacemark=Template(tmplvar)
+# kmlplacemark=Template(tmplvar)
 
 def kmlgenerator(measlogfile, kmlout):
     tmpldir = "templates"
@@ -36,57 +41,68 @@ def kmlgenerator(measlogfile, kmlout):
     print("KML file output: {}".format(kmlout))
     if os.path.isfile(kmlout) == True:
         os.remove(kmlout)
-    kmlfile = open(kmlout,'a')
-    logobject = open(measlogfile,"r")
-    header = open("%s/kmlheader.xml" % tmpldir,"r")
-    footer = open("%s/kmlfooter.xml" % tmpldir,"r")
+    kmlfile = open(kmlout, 'a')
+    logobject = open(measlogfile, "r")
+    header = open("%s/kmlheader.xml" % tmpldir, "r")
+    footer = open("%s/kmlfooter.xml" % tmpldir, "r")
     # Write header of KML file
     for line in header:
         kmlfile.write(line)
     # Now, it is time to add tessallation.
-    #tsltbody=open("%s/kmltessellatebody.xml" % tmpldir,"r")
-    tsltbody="%s/kmltessellatebody.xml" % tmpldir
+    # tsltbody=open("%s/kmltessellatebody.xml" % tmpldir,"r")
+    tsltbody = "%s/kmltessellatebody.xml" % tmpldir
+
     # Create coords_values
     cooval = ""
     for logrow in logobject:
-      elm = logrow.split(',')
-      # Skip line with table header (column name), comments and empty new lines
-      if elm[0] != 'datetime' and elm[0].strip()[0] != '#' and elm[0].strip() != '':
-          cooval = cooval + "%s,%s,%s\r\n" % (elm[2],elm[1],elm[3])
-          print(cooval)
-    kmlfile.write(Template(file2string(tsltbody)).substitute(style="redLineOrangePoly",coords_values=cooval)) # Style could be: yellowLineGreenPoly or redLineOrangePoly, for now.
+        elm = logrow.split(',')
+        # Skip line with table header (column name), comments and empty new lines
+        if elm[0] != 'datetime' and elm[0].strip()[0] != '#' and elm[0].strip() != '':
+            cooval = cooval + "%s,%s,%s\r\n" % (elm[2], elm[1], elm[3])
+            print(cooval)
+    kmlfile.write(Template(file2string(tsltbody)).substitute(style="redLineOrangePoly",
+                                                             coords_values=cooval))  # Style could be: yellowLineGreenPoly or redLineOrangePoly, for now.
     #
-    #measlogfile must be opened again for Points definitions.
+    # measlogfile must be opened again for Points definitions.
     logobject.close()
-    logobject = open(measlogfile,"r")
+    logobject = open(measlogfile, "r")
     i = 1
     for logrow in logobject:
         elm = logrow.split(',')
         latit = elm[1]
         long = elm[2]
-        coordinates = "%s,%s" %(long,latit)
+        coordinates = "%s,%s" % (long, latit)
+        # Skip the first line with the column names
         if elm[0] != 'datetime':
-            description = elm[0] #Date and Time
+            description = elm[0]  # Date and Time
+            magntd = float(elm[3])
             csvfile = elm[4]
             pngfile = elm[5]
-            placemark = Template(file2string(tmplplacemark)).substitute(pathtocsv=ptcsv, pathtoimage=ptimg, name=i, coords=coordinates, desc=description, csv=csvfile, spectrum=pngfile)
+            markerstyle = ["blueMarker", "redMarker"][magntd > 0]
+
+            placemark = Template(file2string(tmplplacemark)).substitute(pathtocsv=ptcsv, pathtoimage=ptimg, name=i,
+                                                                        coords=coordinates, desc=description,
+                                                                        csv=csvfile, spectrum=pngfile,
+                                                                        markerstyle=markerstyle)
             kmlfile.write(placemark)
-            i=i+1
-    #At last, write footer of KML file and then, close it.
+            i = i + 1
+    # At last, write footer of KML file and then, close it.
     for line in footer:
         kmlfile.write(line)
     kmlfile.close()
     logobject.close()
     return
 
+
 def main():
     # Where is measlog File ...
     measlog = sys.argv[1]
     # Where to put generated KML file ...
     kmloutput = sys.argv[2]
-    #print("Meas. log file: {} and KML file is: {}".format(measlog, kmloutput))
-    print sys.argv
+    # print("Meas. log file: {} and KML file is: {}".format(measlog, kmloutput))
+    print(sys.argv)
     kmlgenerator(measlog, kmloutput)
+
 
 if __name__ == "__main__":
     main()

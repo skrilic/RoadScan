@@ -8,7 +8,7 @@ from PySide.QtCore import QThread, SIGNAL
 import os, sys
 import maplayerDesign
 import time
-import ConfigParser as configparser
+import configparser
 from string import Template
 
 tmplvar=""
@@ -34,7 +34,7 @@ class KmlGeneratorWindow(QtGui.QWidget, maplayerDesign.Ui_FormKml):
 
 
     def open_file(self):
-        name = QtGui.QFileDialog.getOpenFileName(self, 'Open File', 'measlog.csv' ,"Log files (*.csv)")
+        name = QtGui.QFileDialog.getOpenFileName(self, 'Open File', 'measlog.csv', "Log files (*.csv)")
         self.lineEdit_input.setText(name[0])
 
     def save_file(self):
