@@ -7,14 +7,16 @@ verify_ssl = true
 pylint = "*"
 
 [packages]
-pyttk = "*"
 gpsbabel = "*"
+gps = "*"
 pyserial = "*"
 pyudev = "*"
 progressbar = "*"
 gmplot = "*"
 pygame = "*"
 StdConfigParser = "*"
+matplotlib = "*"
+colorama = "==0.4.1"
 
 [requires]
 python_version = "3.6"
