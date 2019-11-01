@@ -8,13 +8,11 @@ import threading
 import queue as Queue
 import os
 import configparser
-from measurements.mobile import *
-# from devices.GpsDevice import GpsMgr
+from .measurements.mobile import *
 import matplotlib.pyplot as plt
 import gps
 import threading
 import time
-
 
 magnitude_unit = {
     '0': 'dBm',
@@ -28,9 +26,9 @@ magnitude_unit = {
     '8': 'V/m'
 }
 
-
 gpsd = None
 gpsp = None
+
 
 class GpsMgr(threading.Thread):
     def __init__(self):
@@ -44,7 +42,6 @@ class GpsMgr(threading.Thread):
         global gpsd
         while gpsp.running:
             gpsd.next()  # this will continue to loop and grab EACH set of gpsd info to clear the buffer
-
 
 
 # Variable to control working Loop from GUI
@@ -64,6 +61,7 @@ sleep = 0  # Sleep between measurements cycles
 # Output values
 frequencies = list()
 levels = list()
+
 
 class AsyncWrite(threading.Thread):
     def __init__(self, output_file, file_mode, text):
@@ -91,6 +89,7 @@ def time_stamp(gmt):
 
     return ("{}-{}-{} {}:{}:{}".format(dtnow.tm_year, dtnow.tm_mon, dtnow.tm_mday, dtnow.tm_hour, dtnow.tm_min,
                                        dtnow.tm_sec))
+
 
 def draw_pyplot(datetime, magn_unit, output):
     global frequencies
@@ -139,7 +138,6 @@ def findpeaks(list):
 
 
 class RoadscanGui:
-
     cnffile = ""
 
     def __init__(self, master, queue, stopRequest):
@@ -175,7 +173,6 @@ class RoadscanGui:
         self.frame_control = ttk.Frame(master, relief=GROOVE)
         self.frame_control.pack(fill=X)
 
-
         # WIDGETS DEFINITION
         self.gpslbl = ttk.Label(self.frame_control, text="GPS Port")
         self.gpsport = ttk.Entry(self.frame_control, width=10)
@@ -190,19 +187,17 @@ class RoadscanGui:
 
         self.detect = ttk.Button(self.frame_control, text="Detect GPS/MDEV", command=self.detect_ports)
 
-
         # PUT WIDGETS IN THE FRAME
-        self.gpslbl.grid(column=0, row=0, padx=5, pady=5, sticky=W+E)
-        self.fsh6lbl.grid(column=1, row=0, padx=5, pady=5, sticky=W+E)
+        self.gpslbl.grid(column=0, row=0, padx=5, pady=5, sticky=W + E)
+        self.fsh6lbl.grid(column=1, row=0, padx=5, pady=5, sticky=W + E)
 
-        self.gpsport.grid(column=0, row=1, padx=5, pady=5, sticky=W+E)
-        self.fsh6port.grid(column=1, row=1, padx=5, pady=5, sticky=W+E)
+        self.gpsport.grid(column=0, row=1, padx=5, pady=5, sticky=W + E)
+        self.fsh6port.grid(column=1, row=1, padx=5, pady=5, sticky=W + E)
 
-        self.audio.grid(column=1, row=2, padx=5, pady=5, sticky=W+E)
+        self.audio.grid(column=1, row=2, padx=5, pady=5, sticky=W + E)
 
-        self.cfg.grid(column=0, row=3, padx=5, pady=5, sticky=W+E)
-        self.detect.grid(column=1, row=3, padx=5, pady=5, sticky=W+E)
-
+        self.cfg.grid(column=0, row=3, padx=5, pady=5, sticky=W + E)
+        self.detect.grid(column=1, row=3, padx=5, pady=5, sticky=W + E)
 
         #######################################
         # CREATE FRAME WITH MEASUREMENT STATUS#
@@ -217,15 +212,14 @@ class RoadscanGui:
         self.start = ttk.Button(self.frame_status, text="Start", command=self.start_measurement)
         self.progbar = ttk.Progressbar(self.frame_status, orient=HORIZONTAL, mode="indeterminate")
 
-        self.latlnglbl.grid(row=0, column=0, padx=5, pady=5, sticky=W+E)
-        self.latlng.grid(row=0, column=1, padx=5, pady=5, sticky=W+E)
-        self.magnlbl.grid(row=1, column=0, padx=5, pady=5, sticky=W+E)
-        self.magn.grid(row=1, column=1, padx=5, pady=5, sticky=W+E)
-        self.start.grid(row=2, column=1, padx=5, pady=5, sticky=W+E)
-        self.progbar.grid(row=3, column=0, columnspan=2, padx=5, pady=5, sticky=W+E)
+        self.latlnglbl.grid(row=0, column=0, padx=5, pady=5, sticky=W + E)
+        self.latlng.grid(row=0, column=1, padx=5, pady=5, sticky=W + E)
+        self.magnlbl.grid(row=1, column=0, padx=5, pady=5, sticky=W + E)
+        self.magn.grid(row=1, column=1, padx=5, pady=5, sticky=W + E)
+        self.start.grid(row=2, column=1, padx=5, pady=5, sticky=W + E)
+        self.progbar.grid(row=3, column=0, columnspan=2, padx=5, pady=5, sticky=W + E)
 
         # WORK IN PROGRESS ...
-
 
     def config_file(self):
 
@@ -236,7 +230,6 @@ class RoadscanGui:
                 self.cnffile = fname
             except:  # <- naked except is a bad idea
                 tkMessageBox.showerror("Open Configuration File", "Failed to read file\n'%s'" % fname)
-
 
     def detect_ports(self):
         """
@@ -272,7 +265,6 @@ class RoadscanGui:
             if self.fsh6port.get() == "":
                 tkMessageBox.showerror("Error", "You cannot measure without Instrument!")
 
-
     def start_measurement(self):
         """
         Check if all variables are set and then change Working Thread 1 control
@@ -287,13 +279,13 @@ class RoadscanGui:
         global audio_switch
         global measEq
 
-        if (self.cnffile == "" or self.gpsport.get() =="" or self.fsh6port.get() == ""):
+        if self.cnffile == "" or self.gpsport.get() == "" or self.fsh6port.get() == "":
             tkMessageBox.showerror("Error", "Configuration file, GPS or Instrument were not selected or present!")
-        elif (self.fsh6port == "" or self.fsh6port == "Unknown"):
+        elif self.fsh6port == "" or self.fsh6port == "Unknown":
             tkMessageBox.showerror("Error", "Meas. device is not connected or unknown!")
         else:
-            #tkMessageBox.showinfo("Information", "Lets start ...")
-            if (self.start['text'] == "Start"):
+            # tkMessageBox.showinfo("Information", "Lets start ...")
+            if self.start['text'] == "Start":
                 wt1_running = True
                 self.progbar.start()
                 self.start['text'] = "Stop"
@@ -319,7 +311,6 @@ class RoadscanGui:
             # print("GPS device port: {}".format(self.gpsport.get()))
             # print("Sound enabled: {}".format(self.audioon.get()))
 
-
     def gps_test(self):
         port = self.gpsport.get()
         self.progbar.start()
@@ -341,33 +332,31 @@ class RoadscanGui:
                     print("Info: Reading GPS position!")
                     # mylocation = mygps.getpos()
                     gpsd.data
-                    mylocation = "{},{}".format(gpsd.fix.latitude. gpsd.fix.longitude)
+                    mylocation = "{},{}".format(gpsd.fix.latitude.gpsd.fix.longitude)
                 except:
                     print("Info: Cannot connect to GPS!")
                     mylocation = "0.000000,0.000000"
             print("lat/lng: {}").format(mylocation)
-            #tkMessageBox.showinfo("Information", mylocation)
+            # tkMessageBox.showinfo("Information", mylocation)
             self.latlng.delete(0, END)
             self.latlng.insert(0, mylocation)
         else:
             tkMessageBox.showerror("Error", "GPS port is not defined!")
         self.progbar.stop()
-        #return mylocation
-
+        # return mylocation
 
     def usb_test(self):
         import pyudev
         context = pyudev.Context()
         usb_report = ""
         for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
-            usb_report +=("* {}; {}; {}\r\n".format(device['DEVNAME'],
-                                      device['ID_MODEL_FROM_DATABASE'],
-                                      device['ID_VENDOR_FROM_DATABASE']))
+            usb_report += ("* {}; {}; {}\r\n".format(device['DEVNAME'],
+                                                     device['ID_MODEL_FROM_DATABASE'],
+                                                     device['ID_VENDOR_FROM_DATABASE']))
         if usb_report.strip() != "":
             tkMessageBox.showinfo("Information", usb_report)
         else:
             tkMessageBox.showinfo("Information", "There is not any USB device connected!")
-
 
     def readMessage(self):
         """
@@ -389,7 +378,7 @@ class RoadscanGui:
                 # Draw PLOT
                 draw_pyplot(receivedData[2], receivedData[3], receivedData[4])
 
-                #print("Received Message: {}".format(msg))
+                # print("Received Message: {}".format(msg))
             except Queue.Empty:
                 pass
 
@@ -402,12 +391,12 @@ class AppThread:
         self.gui = RoadscanGui(app, self.queue, self.stopRequest)
         self.running = 1
 
-        self.thread1 = threading.Thread(target=self.measLoop)
+        self.thread1 = threading.Thread(target=self.meas_loop)
         self.thread1.start()
 
         self.readLoop()
 
-    def measLoop(self):
+    def meas_loop(self):
         # measEq Controls FSH6 and GPS garmin
         global measEq
         global frequencies
@@ -518,7 +507,6 @@ class AppThread:
         measEq.release()
         print("Measurement has completed ...")
 
-
     def stopRequest(self):
         self.running = 0
 
@@ -537,7 +525,7 @@ class AppThread:
 
 def main():
     root = Tk()
-    #roadscan = RoadscanGui(root)
+    # roadscan = RoadscanGui(root)
     roadscan = AppThread(root)
     root.mainloop()
 

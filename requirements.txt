@@ -1,3 +1,5 @@
+gps
+matplotlib
 #pyside
 #python3-tk
 pyttk

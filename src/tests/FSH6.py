@@ -71,7 +71,7 @@ class FSH6:
         self.setcmd('FREQ,{}\r'.format(freqcentral))
         self.setcmd('SPAN,{}\r'.format(freqspan))
         self.setcmd('SWPTIME,{}\r'.format(fshconfig['sweep_time']))
-        self.setcmd('SWPCONT,{}\r'.format(fshconfig['sweep_continous']))
+        self.setcmd('SWPCONT,{}\r'.format(fshconfig['sweep_continuous']))
         #self.cmd('INIT\r') #Initialize sweep
         #self.cmd('WAIT\r') #Wait for end of sweep
         self.setcmd('UNIT,{}\r'.format(fshconfig['measurement_unit']))
