@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from devices.FSH6 import FSH6
+from ..devices.FSH6 import FSH6
 # from devices.Garmin import Gpsmgr
 import configparser
 
@@ -51,7 +51,7 @@ class MeasurementStep:
             'fstop': float(config.get("frequency", "stop")),
             'repetition_reset': float(config.get("repetition", "reset")),
             'sweep_time': config.get("sweep", "time"),
-            'sweep_continous': config.get("sweep", "continous"),
+            'sweep_continuous': config.get("sweep", "continuous"),
             'measurement_unit': config.get("unit", "unit"),
             'trace_mode': config.get("trace", "mode"),
             'trace_type': config.get("trace", "average"),

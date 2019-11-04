@@ -133,7 +133,7 @@ def init_measurement(port, measurement_config_file):
         'fstop': float(config.get("frequency", "stop")),
         'repetition_reset': float(config.get("repetition", "reset")),
         'sweep_time': config.get("sweep", "time"),
-        'sweep_continous': config.get("sweep", "continous"),
+        'sweep_continuous': config.get("sweep", "continuous"),
         'measurement_unit': config.get("unit", "unit"),
         'trace_mode': config.get("trace", "mode"),
         'trace_type': config.get("trace", "average"),

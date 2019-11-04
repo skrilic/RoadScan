@@ -2,7 +2,7 @@
         <kml xmlns="http://earth.google.com/kml/2.2">
             <Document>
              <name>Measurement path</name>
-		    <description>Tessallation represent choosen signal feature, and points consist details.</description>
+		    <description>Tessellation represent chosen signal feature, and points consist details.</description>
 		    <Style id="yellowLineGreenPoly">
 		      <LineStyle>
 			<color>7f00ffff</color>
@@ -20,4 +20,30 @@
 		      <PolyStyle>
 			<color>5014B4FA</color>
 		      </PolyStyle>
+		    </Style>
+
+			<Style id="redMarker">
+		      <IconStyle>
+				<color>7f0000ff</color>
+		      </IconStyle>
+		    </Style>
+			<Style id="orangeMarker">
+		      <IconStyle>
+				<color>7f14b4Fa</color>
+		      </IconStyle>
+		    </Style>
+			<Style id="yellowMarker">
+		      <IconStyle>
+				<color>7f00ffff</color>
+		      </IconStyle>
+		    </Style>
+			<Style id="greenMarker">
+		      <IconStyle>
+				<color>7f00ff00</color>
+		      </IconStyle>
+		    </Style>
+			<Style id="blueMarker">
+		      <IconStyle>
+				<color>7fff0000</color>
+		      </IconStyle>
 		    </Style>
