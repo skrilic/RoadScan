@@ -8,7 +8,7 @@ import threading
 import queue as Queue
 import os
 import configparser
-from measurements.mobile import *
+from measurements import *
 import matplotlib.pyplot as plt
 import gps
 import threading
