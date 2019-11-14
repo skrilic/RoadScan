@@ -1,5 +1,5 @@
-from tkinter import *
-import ttk
+import tkinter
+from tkinter import ttk
 from tkinter import filedialog as tkFileDialog
 from tkinter import messagebox as tkMessageBox
 # import tkFileDialog
@@ -8,7 +8,7 @@ import threading
 import queue as Queue
 import os
 import configparser
-from .measurements.mobile import *
+from measurements.mobile import *
 import matplotlib.pyplot as plt
 import gps
 import threading
