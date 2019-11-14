@@ -149,19 +149,19 @@ class RoadscanGui:
         # WIDGETS STYLE
         self.style = ttk.Style()
         self.style.configure('TFrame', background='oldlace')
-        self.style.configure('TButton', foreground='#181a1e', background='#9aa0a0', relief=GROOVE)
+        self.style.configure('TButton', foreground='#181a1e', background='#9aa0a0', relief="groove")
         self.style.configure('TEntry', foreground='#181a1e', background='#89f0f9', font=('Arial', 11))
         self.style.configure('TLabel', foreground='#181a1e', background='oldlace', font=('Arial', 10, 'normal'))
         self.style.configure('TCheckbutton', foreground='#181a1e', background='oldlace', font=('Arial', 10, 'normal'))
 
         # CREATE MENU BAR
-        self.menubar = Menu(master)
+        self.menubar = tkinter.Menu(master)
 
-        self.fileMenu = Menu(self.menubar, tearoff=0)
+        self.fileMenu = tkinter.Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="File", menu=self.fileMenu)
         self.fileMenu.add_command(label="Exit", command=stopRequest)
 
-        self.utilMenu = Menu(self.menubar, tearoff=0)
+        self.utilMenu = tkinter.Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Utils", menu=self.utilMenu)
         self.utilMenu.add_command(label="Read GPS", command=self.gps_test)
         self.utilMenu.add_command(label="USB devices", command=self.usb_test)
@@ -170,8 +170,8 @@ class RoadscanGui:
         master.config(menu=self.menubar)
 
         # CREATE FRAME WITH MEASUREMENT CONTROLS#
-        self.frame_control = ttk.Frame(master, relief=GROOVE)
-        self.frame_control.pack(fill=X)
+        self.frame_control = ttk.Frame(master, relief="groove")
+        self.frame_control.pack(fill="x")
 
         # WIDGETS DEFINITION
         self.gpslbl = ttk.Label(self.frame_control, text="GPS Port")
@@ -182,27 +182,27 @@ class RoadscanGui:
 
         self.cfg = ttk.Button(self.frame_control, text="Select configuration", command=self.config_file)
 
-        self.audioon = BooleanVar()
+        self.audioon = tkinter.BooleanVar()
         self.audio = ttk.Checkbutton(self.frame_control, text="Audio", variable=self.audioon, onvalue=True)
 
         self.detect = ttk.Button(self.frame_control, text="Detect GPS/MDEV", command=self.detect_ports)
 
         # PUT WIDGETS IN THE FRAME
-        self.gpslbl.grid(column=0, row=0, padx=5, pady=5, sticky=W + E)
-        self.fsh6lbl.grid(column=1, row=0, padx=5, pady=5, sticky=W + E)
+        self.gpslbl.grid(column=0, row=0, padx=5, pady=5, sticky="WE")
+        self.fsh6lbl.grid(column=1, row=0, padx=5, pady=5, sticky="WE")
 
-        self.gpsport.grid(column=0, row=1, padx=5, pady=5, sticky=W + E)
-        self.fsh6port.grid(column=1, row=1, padx=5, pady=5, sticky=W + E)
+        self.gpsport.grid(column=0, row=1, padx=5, pady=5, sticky="WE")
+        self.fsh6port.grid(column=1, row=1, padx=5, pady=5, sticky="WE")
 
-        self.audio.grid(column=1, row=2, padx=5, pady=5, sticky=W + E)
+        self.audio.grid(column=1, row=2, padx=5, pady=5, sticky="WE")
 
-        self.cfg.grid(column=0, row=3, padx=5, pady=5, sticky=W + E)
-        self.detect.grid(column=1, row=3, padx=5, pady=5, sticky=W + E)
+        self.cfg.grid(column=0, row=3, padx=5, pady=5, sticky="WE")
+        self.detect.grid(column=1, row=3, padx=5, pady=5, sticky="WE")
 
         #######################################
         # CREATE FRAME WITH MEASUREMENT STATUS#
         self.frame_status = ttk.Frame(master)
-        self.frame_status.pack(fill=X)
+        self.frame_status.pack(fill="x")
 
         self.latlnglbl = ttk.Label(self.frame_status, text="lat/lng:")
         self.latlng = ttk.Entry(self.frame_status, width=25)
@@ -210,14 +210,14 @@ class RoadscanGui:
         self.magn = ttk.Entry(self.frame_status, width=25)
 
         self.start = ttk.Button(self.frame_status, text="Start", command=self.start_measurement)
-        self.progbar = ttk.Progressbar(self.frame_status, orient=HORIZONTAL, mode="indeterminate")
+        self.progbar = ttk.Progressbar(self.frame_status, orient="horizontal", mode="indeterminate")
 
-        self.latlnglbl.grid(row=0, column=0, padx=5, pady=5, sticky=W + E)
-        self.latlng.grid(row=0, column=1, padx=5, pady=5, sticky=W + E)
-        self.magnlbl.grid(row=1, column=0, padx=5, pady=5, sticky=W + E)
-        self.magn.grid(row=1, column=1, padx=5, pady=5, sticky=W + E)
-        self.start.grid(row=2, column=1, padx=5, pady=5, sticky=W + E)
-        self.progbar.grid(row=3, column=0, columnspan=2, padx=5, pady=5, sticky=W + E)
+        self.latlnglbl.grid(row=0, column=0, padx=5, pady=5, sticky="WE")
+        self.latlng.grid(row=0, column=1, padx=5, pady=5, sticky="WE")
+        self.magnlbl.grid(row=1, column=0, padx=5, pady=5, sticky="WE")
+        self.magn.grid(row=1, column=1, padx=5, pady=5, sticky="WE")
+        self.start.grid(row=2, column=1, padx=5, pady=5, sticky="WE")
+        self.progbar.grid(row=3, column=0, columnspan=2, padx=5, pady=5, sticky="WE")
 
         # WORK IN PROGRESS ...
 
@@ -524,7 +524,7 @@ class AppThread:
 
 
 def main():
-    root = Tk()
+    root = tkinter.Tk()
     # roadscan = RoadscanGui(root)
     roadscan = AppThread(root)
     root.mainloop()
