@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ..devices.FSH6 import FSH6
+from devices.FSH6 import FSH6
 # from devices.Garmin import Gpsmgr
 import configparser
 
