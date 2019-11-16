@@ -10,7 +10,7 @@ import os
 import configparser
 from measurements import *
 import matplotlib.pyplot as plt
-import gps
+import gpsd
 import threading
 import time
 
@@ -26,23 +26,30 @@ magnitude_unit = {
     '8': 'V/m'
 }
 
-gpsd = None
-gpsp = None
+def gps_data():
+    gpsd.connect()
+    packet = gpsd.get_current()
+    try:
+        lat, long = packet.position()
+    except:
+        lat, long = ('n/a', 'n/a')
 
+    try:
+        speed = packet.speed()
+    except:
+        speed = 'n/a'
 
-class GpsMgr(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        global gpsd  # bring it in scope
-        gpsd = gps(mode=WATCH_ENABLE)  # starting the stream of info
-        self.current_value = None
-        self.running = True  # setting the thread running to true
+    try:
+        alt = packet.altitude()
+    except:
+        alt = 'n/a'
 
-    def run(self):
-        global gpsd
-        while gpsp.running:
-            gpsd.next()  # this will continue to loop and grab EACH set of gpsd info to clear the buffer
+    try:
+        gps_time = packet.time
+    except:
+        gps_time = 'n/a'
 
+    return(lat, long, speed, alt, gps_time)
 
 # Variable to control working Loop from GUI
 wt1_running = False

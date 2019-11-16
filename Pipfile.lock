@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e754ae20b614243ca48b836a49c5d71d57ad2d16745603617c2e3c5f996916b5"
+            "sha256": "8913f21f7340729414a549eae75aeb2129a657e129cfc4e2d8f2f465325bd7e5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -45,6 +45,13 @@
             ],
             "index": "pypi",
             "version": "==1.1.1"
+        },
+        "gpsd-py3": {
+            "hashes": [
+                "sha256:2908d3bd78dfb6720ecfe22f97e139b5a4a198f38df3a77215cf644a33513192"
+            ],
+            "index": "pypi",
+            "version": "==0.3.0"
         },
         "kiwisolver": {
             "hashes": [
