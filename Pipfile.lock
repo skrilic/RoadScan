@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b88663f4d39c5d9edd54d8d935b26e434450649e849fe4b23b3429eedd8da964"
+            "sha256": "de3e8120383648e7cddaeca154c7228bf4f468f692c38176250148f30020778e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -30,21 +30,6 @@
                 "sha256:cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"
             ],
             "version": "==0.10.0"
-        },
-        "gps": {
-            "hashes": [
-                "sha256:19592208592abdf28c8208f68faa9b8fee410543517b4a436f7a44d4b60aff85",
-                "sha256:9e1d2280e4944ddb46cf19772b2768848db91bf8363ad8a72b7996b1c6dd560a"
-            ],
-            "index": "pypi",
-            "version": "==3.19"
-        },
-        "gpsbabel": {
-            "hashes": [
-                "sha256:81c450bda90a28fdf7c937004dbbac877dc59115528e89a9df0d6d4637ada8b7"
-            ],
-            "index": "pypi",
-            "version": "==1.1.1"
         },
         "gpsd-py3": {
             "hashes": [
@@ -203,13 +188,6 @@
             ],
             "index": "pypi",
             "version": "==0.21.0"
-        },
-        "pyusb": {
-            "hashes": [
-                "sha256:4e9b72cc4a4205ca64fbf1f3fff39a335512166c151ad103e55c8223ac147362"
-            ],
-            "index": "pypi",
-            "version": "==1.0.2"
         },
         "six": {
             "hashes": [

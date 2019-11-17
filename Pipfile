@@ -7,8 +7,6 @@ verify_ssl = true
 pylint = "*"
 
 [packages]
-gpsbabel = "*"
-gps = "*"
 gpsd-py3 = "*"
 pyserial = "*"
 pyudev = "*"
@@ -17,7 +15,7 @@ pygame = "*"
 StdConfigParser = "*"
 matplotlib = "*"
 colorama = "==0.4.1"
-pyusb = "*"
+#pyusb = "*"
 
 [requires]
 python_version = "3.7"
