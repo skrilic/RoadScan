@@ -3,6 +3,8 @@
 *bin/
 *lib/
 *include/
+*build/
+*dist/
 
 *.vscode/
 *.idea/
