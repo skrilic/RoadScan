@@ -1,1 +1,1 @@
-from .FSH6 import *
+from .fsh6_device import FSH6

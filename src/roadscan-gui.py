@@ -5,12 +5,12 @@ from tkinter import messagebox as tkMessageBox
 # import tkFileDialog
 # import tkMessageBox
 import threading
+from devices import gps_device
 import queue as Queue
 import os
 import configparser
 from measurements import *
 import matplotlib.pyplot as plt
-import gpsd
 import threading
 import time
 
@@ -26,39 +26,14 @@ magnitude_unit = {
     '8': 'V/m'
 }
 
-def gps_data():
-    gpsd.connect()
-    packet = gpsd.get_current()
-    try:
-        lat, long = packet.position()
-    except:
-        lat, long = ('n/a', 'n/a')
-
-    try:
-        speed = packet.speed()
-    except:
-        speed = 'n/a'
-
-    try:
-        alt = packet.altitude()
-    except:
-        alt = 'n/a'
-
-    try:
-        gps_time = packet.time
-    except:
-        gps_time = 'n/a'
-
-    return(lat, long, speed, alt, gps_time)
 
 # Variable to control working Loop from GUI
 wt1_running = False
 
 measdev = ""
 gpsdev = ""
-measconf = "./conf/default.ini"
+meas_conf = ""
 audio_switch = 0
-gpsmodel = 'garmin'
 measEq = None
 app_cwd = os.getcwd()  # Find Current dir
 sound_file = "{}/{}".format(app_cwd, "/sounds/Electronic_Chime.wav")
@@ -145,7 +120,8 @@ def findpeaks(list):
 
 
 class RoadscanGui:
-    cnffile = ""
+    # cnffile = ""
+    global meas_conf
 
     def __init__(self, master, queue, stopRequest):
         self.queue = queue
@@ -206,8 +182,8 @@ class RoadscanGui:
         self.cfg.grid(column=0, row=3, padx=5, pady=5, sticky="WE")
         self.detect.grid(column=1, row=3, padx=5, pady=5, sticky="WE")
 
-        #######################################
-        # CREATE FRAME WITH MEASUREMENT STATUS#
+        ########################################
+        # CREATE FRAME WITH MEASUREMENT STATUS #
         self.frame_status = ttk.Frame(master)
         self.frame_status.pack(fill="x")
 
@@ -229,14 +205,14 @@ class RoadscanGui:
         # WORK IN PROGRESS ...
 
     def config_file(self):
-
+        global meas_conf
         fname = tkFileDialog.askopenfilename(filetypes=(("Configuration file", "*.ini"), ("Text files", "*.txt")))
         if fname:
             try:
                 tkMessageBox.showinfo("Information", "Configuration file selected: %s" % fname)
-                self.cnffile = fname
-            except:  # <- naked except is a bad idea
-                tkMessageBox.showerror("Open Configuration File", "Failed to read file\n'%s'" % fname)
+                meas_conf = fname
+            except (FileExistsError, FileNotFoundError, IOError) as e:  # <- naked except is a bad idea
+                tkMessageBox.showerror("Open Configuration File", "Failed to read file\n%s\n%s" % (fname, e))
 
     def detect_ports(self):
         """
@@ -248,8 +224,8 @@ class RoadscanGui:
         context = pyudev.Context()
 
         # At first, clear the Entry boxes
-        self.gpsport.delete(0, END)
-        self.fsh6port.delete(0, END)
+        self.gpsport.delete(0, 'end')
+        self.fsh6port.delete(0, 'end')
 
         if context.list_devices(subsystem='tty', ID_BUS='usb') == '':
             self.gpsport.insert(0, "off")
@@ -257,7 +233,10 @@ class RoadscanGui:
 
         else:
             for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
-                if device['ID_MODEL_FROM_DATABASE'].find('GPS') != -1:
+                if device['ID_MODEL_FROM_DATABASE'].find('u-blox') != -1:
+                    self.gpsport.insert(0, device['DEVNAME'])
+
+                elif device['ID_MODEL_FROM_DATABASE'].find('GPS') != -1:
                     self.gpsport.insert(0, device['DEVNAME'])
 
                 elif device['ID_MODEL_FROM_DATABASE'].find('FT232') != -1:
@@ -282,7 +261,7 @@ class RoadscanGui:
 
         global measdev
         global gpsdev
-        global measconf
+        global meas_conf
         global audio_switch
         global measEq
 
@@ -296,12 +275,12 @@ class RoadscanGui:
                 wt1_running = True
                 self.progbar.start()
                 self.start['text'] = "Stop"
-                # measEq Controls FSH6 and GPS garmin
+                # measEq Controls FSH6 and GPS
                 measdev = self.fsh6port.get()
                 gpsdev = self.gpsport.get()
-                measconf = self.cnffile
+                meas_conf = self.cnffile
                 # print("*FSH: {}\n*GPS: {}\n*Config: {}".format(measdev, gpsdev, measconf))
-                measEq = MeasurementStep(measdev, gpsdev, gpsmodel, directory, measconf)
+                measEq = MeasurementStep(measdev, gpsdev, directory, meas_conf)
             else:
                 wt1_running = False
                 self.progbar.stop()
@@ -310,7 +289,7 @@ class RoadscanGui:
             # Set global vars so the thread can read from
             measdev = self.fsh6port.get()
             gpsdev = self.gpsport.get()
-            measconf = self.cnffile
+            meas_conf = self.cnffile
             audio_switch = self.audioon.get()
 
             # print("Config file: {}".format(self.cnffile))
@@ -322,7 +301,6 @@ class RoadscanGui:
         port = self.gpsport.get()
         self.progbar.start()
         if port.strip() != "":
-            type = 'garmin'
             # latit, longit = latlong(port, type).split(',')
             # print("GPS {} is connected to {} port".format(type, port))
             # print("Position is {} {}".format(latit, longit))
@@ -331,22 +309,16 @@ class RoadscanGui:
                 print("Info: The GPS is off!")
                 mylocation = "0.000000,0.000000"
             else:
-                print("Info: Trying to connect with GPS!")
-                # mygps = Gpsmgr(port, type)
-                mygps = GpsMgr()
-                mygps.start()
-                try:
-                    print("Info: Reading GPS position!")
-                    # mylocation = mygps.getpos()
-                    gpsd.data
-                    mylocation = "{},{}".format(gpsd.fix.latitude.gpsd.fix.longitude)
-                except:
-                    print("Info: Cannot connect to GPS!")
-                    mylocation = "0.000000,0.000000"
-            print("lat/lng: {}").format(mylocation)
+                # print("Info: Trying to connect to GPSD!")
+                if self.gpsport == 'off':
+                    mygps = "0.000000,0.000000"
+                else:
+                    lat_long = gps_device.get_gps_data()['position']
+                    mygps = f"{lat_long[0]},{lat_long[1]}"
+
             # tkMessageBox.showinfo("Information", mylocation)
-            self.latlng.delete(0, END)
-            self.latlng.insert(0, mylocation)
+            self.latlng.delete(0, 'end')
+            self.latlng.insert(0, mygps)
         else:
             tkMessageBox.showerror("Error", "GPS port is not defined!")
         self.progbar.stop()
@@ -357,9 +329,11 @@ class RoadscanGui:
         context = pyudev.Context()
         usb_report = ""
         for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
-            usb_report += ("* {}; {}; {}\r\n".format(device['DEVNAME'],
-                                                     device['ID_MODEL_FROM_DATABASE'],
-                                                     device['ID_VENDOR_FROM_DATABASE']))
+            usb_report += ("* {}; {}; {}\r\n".format(
+                device.device_node,
+                device['ID_MODEL_FROM_DATABASE'],
+                device['ID_VENDOR_FROM_DATABASE']
+            ))
         if usb_report.strip() != "":
             tkMessageBox.showinfo("Information", usb_report)
         else:
@@ -376,10 +350,10 @@ class RoadscanGui:
                 # As a test, we simply print it
                 receivedData = msg.split(';')
 
-                self.latlng.delete(0, END)
+                self.latlng.delete(0, "end")
                 self.latlng.insert(0, receivedData[0])
 
-                self.magn.delete(0, END)
+                self.magn.delete(0, "end")
                 self.magn.insert(0, receivedData[1])
 
                 # Draw PLOT
@@ -408,14 +382,19 @@ class AppThread:
         global measEq
         global frequencies
         global levels
+        global meas_conf
 
-        print("Config file: {}".format(measconf))
+        if meas_conf == "":
+            RoadscanGui.config_file(self)
+
+        print("Config file: {}".format(meas_conf))
 
         config = configparser.ConfigParser()
-        config.read("{}".format(measconf))
+        config.read("{}".format(meas_conf))
 
         fstart = float(config.get("frequency", "start"))
         fstop = float(config.get("frequency", "stop"))
+        print(f"Fstart {fstart}, Fstop {fstop}")
         magn_unit = config.get("unit", "unit")
         threshold = float(config.get("level", "threshold"))
 

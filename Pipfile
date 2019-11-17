@@ -13,11 +13,11 @@ gpsd-py3 = "*"
 pyserial = "*"
 pyudev = "*"
 progressbar = "*"
-#gmplot = "*"
 pygame = "*"
 StdConfigParser = "*"
 matplotlib = "*"
 colorama = "==0.4.1"
+pyusb = "*"
 
 [requires]
 python_version = "3.7"

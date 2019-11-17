@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from devices import FSH6
+from devices import FSH6, gps_device
+
 # from devices.Garmin import Gpsmgr
 import configparser
-
 
 magnitude_unit = {
     '0': 'dBm',
@@ -19,10 +19,9 @@ magnitude_unit = {
 
 class MeasurementStep:
 
-    def __init__(self, measdev, gpsdev, gpsmodel, directory, measconfig):
+    def __init__(self, measdev, gpsdev, directory, measconfig):
         self.measdev = measdev
         self.gpsdev = gpsdev
-        self.gpsmodel = gpsmodel
         self.directory = directory
         self.measconfig = measconfig
 
@@ -76,9 +75,6 @@ class MeasurementStep:
         if self.gpsdev == 'off':
             mylocation = "0.000000,0.000000"
         else:
-            mygps = Gpsmgr(self.gpsdev, self.gpsmodel)
-            try:
-                mylocation = mygps.getpos()
-            except:
-                mylocation = "0.000000,0.000000"
+            lat_long = gps_device.get_gps_data()['position']
+            mylocation = f"{lat_long[0]},{lat_long[1]}"
         return mylocation

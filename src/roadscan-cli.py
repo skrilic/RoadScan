@@ -1,4 +1,4 @@
-from .devices.FSH6 import FSH6
+from .devices.fsh6_device import FSH6
 from .devices.Garmin import Gpsmgr
 import configparser
 from optparse import OptionParser

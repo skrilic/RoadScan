@@ -13,11 +13,20 @@
 # for usb_dev in devices:
 #     print("Port: {} - Description: {}".format(usb_dev['device'], usb_dev['tag']))
 
-import pyudev
+# import pyudev
 
-context = pyudev.Context()
+# context = pyudev.Context()
 
-for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
-	#pprint.pprint(dict(device))
-    #print(dict(device))
-    print("{}, {}, {}".format(device['DEVNAME'], device['ID_VENDOR_ID'], device['ID_VENDOR_FROM_DATABASE']))
+# for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
+    # print(dict(device))
+    # print("{}, {}, {}".format(device['DEVNAME'], device['ID_VENDOR_ID'], device['ID_VENDOR_FROM_DATABASE']))
+
+import sys
+import usb.core
+
+# find USB devices
+dev = usb.core.find(find_all=True)
+# loop through devices, printing vendor and product ids in decimal and hex
+for cfg in dev:
+    sys.stdout.write('Decimal VendorID=' + str(cfg.idVendor) + ' & ProductID=' + str(cfg.idProduct) + '\n')
+    sys.stdout.write('Hexadecimal VendorID=' + hex(cfg.idVendor) + ' & ProductID=' + hex(cfg.idProduct) + '\n\n')
