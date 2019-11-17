@@ -7,4 +7,7 @@
 *.vscode/
 *.idea/
 
+# .gitkeep file name is not mandatory it could be whatever you like
 /src/data/*
+!/src/data/.gitkeep
+
