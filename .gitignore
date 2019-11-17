@@ -4,8 +4,7 @@
 *lib/
 *include/
 
-/src/data/
-
 *.vscode/
 *.idea/
 
+/src/data/*

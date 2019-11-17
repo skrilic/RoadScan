@@ -265,7 +265,8 @@ class RoadscanGui:
         global audio_switch
         global measEq
 
-        if self.cnffile == "" or self.gpsport.get() == "" or self.fsh6port.get() == "":
+        print(f"Measuremnet config file: {meas_conf}")
+        if meas_conf == "" or self.gpsport.get() == "" or self.fsh6port.get() == "":
             tkMessageBox.showerror("Error", "Configuration file, GPS or Instrument were not selected or present!")
         elif self.fsh6port == "" or self.fsh6port == "Unknown":
             tkMessageBox.showerror("Error", "Meas. device is not connected or unknown!")
@@ -274,7 +275,7 @@ class RoadscanGui:
             if self.start['text'] == "Start":
                 wt1_running = True
                 self.progbar.start()
-                self.start['text'] = "Stop"
+                self.start['text'] = "Pause"
                 # measEq Controls FSH6 and GPS
                 measdev = self.fsh6port.get()
                 gpsdev = self.gpsport.get()
@@ -513,6 +514,7 @@ def main():
     root = tkinter.Tk()
     # roadscan = RoadscanGui(root)
     roadscan = AppThread(root)
+    root.protocol('WM_DELETE_WINDOW', lambda: tkMessageBox.showinfo("Information", "Please use File -> Exit"))  # root is your root window
     root.mainloop()
 
 
