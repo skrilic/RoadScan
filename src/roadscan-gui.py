@@ -160,27 +160,27 @@ class RoadscanGui:
         self.gpslbl = ttk.Label(self.frame_control, text="GPS Port")
         self.gpsport = ttk.Entry(self.frame_control, width=10)
 
-        self.fsh6lbl = ttk.Label(self.frame_control, text="MDEV Port")
+        self.fsh6lbl = ttk.Label(self.frame_control, text="FSH6 cable")
         self.fsh6port = ttk.Entry(self.frame_control, width=10)
 
-        self.cfg = ttk.Button(self.frame_control, text="Select configuration", command=self.config_file)
+        # self.cfg = ttk.Button(self.frame_control, text="Select configuration", command=self.config_file)
 
         self.audioon = tkinter.BooleanVar()
         self.audio = ttk.Checkbutton(self.frame_control, text="Audio", variable=self.audioon, onvalue=True)
 
-        self.detect = ttk.Button(self.frame_control, text="Detect GPS/MDEV", command=self.detect_ports)
+        self.detect = ttk.Button(self.frame_control, text="Detect Dev.", command=self.detect_ports)
 
         # PUT WIDGETS IN THE FRAME
-        self.gpslbl.grid(column=0, row=0, padx=5, pady=5, sticky="WE")
-        self.fsh6lbl.grid(column=1, row=0, padx=5, pady=5, sticky="WE")
+        self.gpslbl.grid(column=0, row=0, padx=5, pady=5, sticky="W")
+        self.fsh6lbl.grid(column=1, row=0, padx=5, pady=5, sticky="E")
 
-        self.gpsport.grid(column=0, row=1, padx=5, pady=5, sticky="WE")
-        self.fsh6port.grid(column=1, row=1, padx=5, pady=5, sticky="WE")
+        self.gpsport.grid(column=0, row=1, padx=5, pady=5, sticky="W")
+        self.fsh6port.grid(column=1, row=1, padx=5, pady=5, sticky="E")
 
-        self.audio.grid(column=1, row=2, padx=5, pady=5, sticky="WE")
+        self.audio.grid(column=1, row=2, padx=5, pady=5, sticky="E")
 
-        self.cfg.grid(column=0, row=3, padx=5, pady=5, sticky="WE")
-        self.detect.grid(column=1, row=3, padx=5, pady=5, sticky="WE")
+        # self.cfg.grid(column=0, row=3, padx=5, pady=5, sticky="W")
+        self.detect.grid(column=1, row=3, padx=5, pady=5, sticky="E")
 
         ########################################
         # CREATE FRAME WITH MEASUREMENT STATUS #
@@ -512,6 +512,8 @@ class AppThread:
 
 def main():
     root = tkinter.Tk()
+    root.grid_columnconfigure(0, weight=1)
+    root.grid_columnconfigure(1, weight=1)
     # roadscan = RoadscanGui(root)
     roadscan = AppThread(root)
     root.protocol('WM_DELETE_WINDOW', lambda: tkMessageBox.showinfo("Information", "Please use File -> Exit"))  # root is your root window
