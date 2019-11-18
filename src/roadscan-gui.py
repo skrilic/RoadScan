@@ -279,7 +279,7 @@ class RoadscanGui:
                 # measEq Controls FSH6 and GPS
                 measdev = self.fsh6port.get()
                 gpsdev = self.gpsport.get()
-                meas_conf = self.cnffile
+                # meas_conf = self.cnffile
                 # print("*FSH: {}\n*GPS: {}\n*Config: {}".format(measdev, gpsdev, measconf))
                 measEq = MeasurementStep(measdev, gpsdev, directory, meas_conf)
             else:
@@ -290,7 +290,7 @@ class RoadscanGui:
             # Set global vars so the thread can read from
             measdev = self.fsh6port.get()
             gpsdev = self.gpsport.get()
-            meas_conf = self.cnffile
+            # meas_conf = self.cnffile
             audio_switch = self.audioon.get()
 
             # print("Config file: {}".format(self.cnffile))
