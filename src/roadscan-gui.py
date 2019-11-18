@@ -32,6 +32,7 @@ wt1_running = False
 
 measdev = ""
 gpsdev = ""
+
 meas_conf = ""
 audio_switch = 0
 measEq = None
@@ -43,6 +44,55 @@ sleep = 0  # Sleep between measurements cycles
 # Output values
 frequencies = list()
 levels = list()
+
+gps_port = ""
+fsh6_port = ""
+
+
+def port_detection():
+    """
+    Find USB ports Where are GPS and FSH Connected
+    :return:
+    """
+    import pyudev
+    context = pyudev.Context()
+
+    global gps_port
+    global fsh6_port
+
+    print("==== port_detection here! I am gonna try to detect ports! ====")
+
+    # At first, clear the Entry boxes
+
+    # self.gpsport.delete(0, 'end')
+    # self.fsh6port.delete(0, 'end')
+    gps_port = ""
+    fsh6_port = ""
+
+    if context.list_devices(subsystem='tty', ID_BUS='usb') == '':
+        gps_port = ""
+        fsh6_port = ""
+
+    else:
+        for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
+            if device['ID_MODEL_FROM_DATABASE'].find('u-blox') != -1:
+                gps_port = device['DEVNAME']
+
+            elif device['ID_MODEL_FROM_DATABASE'].find('GPS') != -1:
+                gps_port = device['DEVNAME']
+
+            elif device['ID_MODEL_FROM_DATABASE'].find('FT232') != -1:
+                fsh6_port = device['DEVNAME']
+
+            else:
+                gps_port = "N/A"
+                fsh6_port = "N/A"
+        if gps_port == "":
+            # self.gpsport.set(0, "off")
+            gps_port = "N/A"
+
+        if fsh6_port == "":
+            fsh6_port = "N/A"
 
 
 class AsyncWrite(threading.Thread):
@@ -123,11 +173,19 @@ class RoadscanGui:
     # cnffile = ""
     global meas_conf
 
-    def __init__(self, master, queue, stopRequest):
+    # global gps_port
+    # global fsh6_port
+
+    def __init__(self, master, queue, stopRequest, gps_port_val, fsh6_port_val):
         self.queue = queue
 
         master.config()
         master.title("Roadscan")
+
+        print(f"3rd GPS {gps_port_val}, FSH6 {fsh6_port_val}")
+
+        self.gps_port_val = tkinter.StringVar()
+        self.fsh6_port_val = tkinter.StringVar()
 
         # WIDGETS STYLE
         self.style = ttk.Style()
@@ -156,12 +214,15 @@ class RoadscanGui:
         self.frame_control = ttk.Frame(master, relief="groove")
         self.frame_control.pack(fill="x")
 
+        self.frame_control.columnconfigure((0, 0), weight=1)
+        self.frame_control.columnconfigure((0, 1), weight=1)
+
         # WIDGETS DEFINITION
         self.gpslbl = ttk.Label(self.frame_control, text="GPS Port")
-        self.gpsport = ttk.Entry(self.frame_control, width=10)
+        self.gpsport = ttk.Entry(self.frame_control, width=10, textvariable=self.gps_port_val)
 
         self.fsh6lbl = ttk.Label(self.frame_control, text="FSH6 cable")
-        self.fsh6port = ttk.Entry(self.frame_control, width=10)
+        self.fsh6port = ttk.Entry(self.frame_control, width=10, textvariable=self.fsh6_port_val)
 
         # self.cfg = ttk.Button(self.frame_control, text="Select configuration", command=self.config_file)
 
@@ -171,16 +232,16 @@ class RoadscanGui:
         self.detect = ttk.Button(self.frame_control, text="Detect Dev.", command=self.detect_ports)
 
         # PUT WIDGETS IN THE FRAME
-        self.gpslbl.grid(column=0, row=0, padx=5, pady=5, sticky="W")
-        self.fsh6lbl.grid(column=1, row=0, padx=5, pady=5, sticky="E")
+        self.gpslbl.grid(column=0, row=0, padx=5, pady=5, sticky="WE")
+        self.fsh6lbl.grid(column=1, row=0, padx=5, pady=5, sticky="WE")
 
-        self.gpsport.grid(column=0, row=1, padx=5, pady=5, sticky="W")
-        self.fsh6port.grid(column=1, row=1, padx=5, pady=5, sticky="E")
+        self.gpsport.grid(column=0, row=1, padx=5, pady=5, sticky="WE")
+        self.fsh6port.grid(column=1, row=1, padx=5, pady=5, sticky="WE")
 
-        self.audio.grid(column=1, row=2, padx=5, pady=5, sticky="E")
+        self.audio.grid(column=1, row=2, padx=5, pady=5, sticky="WE")
 
-        # self.cfg.grid(column=0, row=3, padx=5, pady=5, sticky="W")
-        self.detect.grid(column=1, row=3, padx=5, pady=5, sticky="E")
+        # self.cfg.grid(column=0, row=3, padx=5, pady=5, sticky="WE")
+        self.detect.grid(column=1, row=3, padx=5, pady=5, sticky="WE")
 
         ########################################
         # CREATE FRAME WITH MEASUREMENT STATUS #
@@ -203,6 +264,8 @@ class RoadscanGui:
         self.progbar.grid(row=3, column=0, columnspan=2, padx=5, pady=5, sticky="WE")
 
         # WORK IN PROGRESS ...
+        self.gpsport.insert(0, gps_port_val)
+        self.fsh6port.insert(0, fsh6_port_val)
 
     def config_file(self):
         global meas_conf
@@ -215,41 +278,15 @@ class RoadscanGui:
                 tkMessageBox.showerror("Open Configuration File", "Failed to read file\n%s\n%s" % (fname, e))
 
     def detect_ports(self):
-        """
-        Find USB ports Where are GPS and FSH Connected
-        :return:
-        """
+        self.gpsport.delete(0, "end")
+        self.fsh6port.delete(0, "end")
 
-        import pyudev
-        context = pyudev.Context()
+        port_detection()
+        self.gpsport.insert(0, gps_port)
+        self.fsh6port.insert(0, fsh6_port)
 
-        # At first, clear the Entry boxes
-        self.gpsport.delete(0, 'end')
-        self.fsh6port.delete(0, 'end')
-
-        if context.list_devices(subsystem='tty', ID_BUS='usb') == '':
-            self.gpsport.insert(0, "off")
-            self.fsh6port.insert(0, "off")
-
-        else:
-            for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
-                if device['ID_MODEL_FROM_DATABASE'].find('u-blox') != -1:
-                    self.gpsport.insert(0, device['DEVNAME'])
-
-                elif device['ID_MODEL_FROM_DATABASE'].find('GPS') != -1:
-                    self.gpsport.insert(0, device['DEVNAME'])
-
-                elif device['ID_MODEL_FROM_DATABASE'].find('FT232') != -1:
-                    self.fsh6port.insert(0, device['DEVNAME'])
-
-                else:
-                    self.gpsport.insert(0, "Unknown")
-                    self.fsh6port.insert(0, "Unknown")
-            if self.gpsport.get() == "":
-                self.gpsport.insert(0, "off")
-
-            if self.fsh6port.get() == "":
-                tkMessageBox.showerror("Error", "You cannot measure without Instrument!")
+        if self.fsh6port.get() == "N/A":
+            tkMessageBox.showerror("Error", "You cannot measure without Instrument!")
 
     def start_measurement(self):
         """
@@ -367,10 +404,13 @@ class RoadscanGui:
 
 class AppThread:
     def __init__(self, app):
+
         self.app = app
         self.queue = Queue.Queue()
-
-        self.gui = RoadscanGui(app, self.queue, self.stopRequest)
+        self.gps_port_val = gps_port
+        self.fsh6_port_val = fsh6_port
+        print(f"2nd GPS {gps_port}, FSH6 {fsh6_port}")
+        self.gui = RoadscanGui(app, self.queue, self.stopRequest, self.gps_port_val, self.fsh6_port_val)
         self.running = 1
 
         self.thread1 = threading.Thread(target=self.meas_loop)
@@ -512,10 +552,11 @@ class AppThread:
 
 def main():
     root = tkinter.Tk()
-    root.grid_columnconfigure(0, weight=1)
-    root.grid_columnconfigure(1, weight=1)
-    # roadscan = RoadscanGui(root)
+
+    port_detection()
+    print(f"GPS {gps_port}, FSH6 {fsh6_port}")
     roadscan = AppThread(root)
+
     root.protocol('WM_DELETE_WINDOW', lambda: tkMessageBox.showinfo("Information", "Please use File -> Exit"))  # root is your root window
     root.mainloop()
 
