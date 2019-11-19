@@ -454,6 +454,7 @@ class AppThread:
         os.makedirs(imagedirname)
 
         # Now, create it ...
+        # TODO: Add speed, altitude and GPS time if it is possible
         measlogfile = "{}/measlog.csv".format(csvdirname)
         measlog_thread = AsyncWrite(measlogfile, "a",
                                     "datetime,latitude,longitude,abovethreshold,csvfile,pngfile\r\n")

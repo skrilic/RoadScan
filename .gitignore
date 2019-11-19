@@ -13,3 +13,4 @@
 /src/data/*
 !/src/data/.gitkeep
 
+/data/

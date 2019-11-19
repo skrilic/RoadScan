@@ -8,7 +8,7 @@ def get_gps_data():
     try:
         lat, long = packet.position()
     except:
-        lat, long = ('n/a', 'n/a')
+        lat, long = ('00.000000', '00.000000')
 
     try:
         speed = packet.speed()
