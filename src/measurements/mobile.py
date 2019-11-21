@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from devices import FSH6, gps_device
 
-# from devices.Garmin import Gpsmgr
 import configparser
 
 magnitude_unit = {
@@ -78,3 +77,24 @@ class MeasurementStep:
             lat_long = gps_device.get_gps_data()['position']
             mylocation = f"{lat_long[0]},{lat_long[1]}"
         return mylocation
+
+    def altitude(self):
+        if self.gpsdev == 'off':
+            alt = "n/a"
+        else:
+            alt = gps_device.get_gps_data()['alt']
+        return alt
+
+    def speed(self):
+        if self.gpsdev == 'off':
+            speed = "n/a"
+        else:
+            speed = gps_device.get_gps_data()['speed']
+        return speed
+
+    def gpstime(self):
+        if self.gpsdev == 'off':
+            gps_time = "n/a"
+        else:
+            gps_time = gps_device.get_gps_data()['gps_time']
+        return gps_time

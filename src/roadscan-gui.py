@@ -5,11 +5,11 @@ from tkinter import messagebox as tkMessageBox
 # import tkFileDialog
 # import tkMessageBox
 import threading
-from devices import gps_device
+from src.devices import gps_device
 import queue as Queue
 import os
 import configparser
-from measurements import *
+from src.measurements import *
 import matplotlib.pyplot as plt
 import threading
 import time
@@ -35,7 +35,7 @@ gpsdev = ""
 
 meas_conf = ""
 audio_switch = 0
-measEq = None
+measurement_equipment = None
 app_cwd = os.getcwd()  # Find Current dir
 sound_file = "{}/{}".format(app_cwd, "/sounds/Electronic_Chime.wav")
 directory = '%s/data' % app_cwd  # Output results folder
@@ -300,7 +300,7 @@ class RoadscanGui:
         global gpsdev
         global meas_conf
         global audio_switch
-        global measEq
+        global measurement_equipment
 
         print(f"Measuremnet config file: {meas_conf}")
         if meas_conf == "" or self.gpsport.get() == "" or self.fsh6port.get() == "":
@@ -318,7 +318,7 @@ class RoadscanGui:
                 gpsdev = self.gpsport.get()
                 # meas_conf = self.cnffile
                 # print("*FSH: {}\n*GPS: {}\n*Config: {}".format(measdev, gpsdev, measconf))
-                measEq = MeasurementStep(measdev, gpsdev, directory, meas_conf)
+                measurement_equipment = MeasurementStep(measdev, gpsdev, directory, meas_conf)
             else:
                 wt1_running = False
                 self.progbar.stop()
@@ -419,8 +419,8 @@ class AppThread:
         self.readLoop()
 
     def meas_loop(self):
-        # measEq Controls FSH6 and GPS garmin
-        global measEq
+        # measEq Controls FSH6 and GPS
+        global measurement_equipment
         global frequencies
         global levels
         global meas_conf
@@ -457,20 +457,23 @@ class AppThread:
         # TODO: Add speed, altitude and GPS time if it is possible
         measlogfile = "{}/measlog.csv".format(csvdirname)
         measlog_thread = AsyncWrite(measlogfile, "a",
-                                    "datetime,latitude,longitude,abovethreshold,csvfile,pngfile\r\n")
+                                    "datetime,latitude,longitude,speed,altitude,gpstime,abovethreshold,csvfile,pngfile\r\n")
         measlog_thread.start()
         while self.running:
             # JUST CREATE FILES FOR STORING RESULTS
             # Names for files at first ...
 
             filename_base = time_stamp(gmt=True).replace(':', '-').replace(' ', '_')
-            if measEq != None:
-                myposition = measEq.latlong()
+            if measurement_equipment != None:
+                myposition = measurement_equipment.latlong()
+                myspeed = measurement_equipment.speed()
+                myaltitude = measurement_equipment.altitude()
+                mygpstime = measurement_equipment.gpstime()
                 # print("GPS: {}".format(myposition))
                 csvfile = "%s_%s.csv" % (myposition.replace(',', '-').replace('.', '_'), filename_base)
                 pngfile = "%s.png" % filename_base
 
-                results = measEq.measurement()
+                results = measurement_equipment.measurement()
                 # print("Length of FSH6 Output is: {}".format(len(results)))
                 #
                 # For FSH6 length of correct buffer is 301
@@ -509,7 +512,6 @@ class AppThread:
 
                     # Draw to pngfile
                     plot_file = "%s/%s/png/%s" % (directory, datetimestring, pngfile)
-                    # draw_pyplot(frequencies, levels, time_stamp(True), magn_unit, plot_file)
 
                     msg = "{};{};{};{};{}".format(myposition, max_min['ymax'], time_stamp(True), magn_unit, plot_file)
                     self.queue.put(msg)
@@ -518,12 +520,14 @@ class AppThread:
                     if audio_switch:
                         sound_thread = threading.Thread(target=play_sound, args=(sound_file,))
                         sound_thread.start()
-                        # play_sound("%s/sounds/Electronic_Chime.wav" % app_cwd)
 
                     # Global Link file
                     mlf1 = AsyncWrite(measlogfile, "a",
                                       "%s,%s,%s,%s,%s\r\n" % (dattim,
                                                               myposition,
+                                                              myspeed,
+                                                              myaltitude,
+                                                              mygpstime,
                                                               abovethreshold,
                                                               "{}/{}".format(csvdirname, csvfile),
                                                               "{}/{}".format(imagedirname, pngfile))
@@ -532,7 +536,7 @@ class AppThread:
             time.sleep(float(sleep))
             counter += 1
 
-        measEq.release()
+        measurement_equipment.release()
         print("Measurement has completed ...")
 
     def stopRequest(self):
