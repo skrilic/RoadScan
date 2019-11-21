@@ -457,7 +457,7 @@ class AppThread:
         # TODO: Add speed, altitude and GPS time if it is possible
         measlogfile = "{}/measlog.csv".format(csvdirname)
         measlog_thread = AsyncWrite(measlogfile, "a",
-                                    "datetime,latitude,longitude,abovethreshold,csvfile,pngfile\r\n")
+                                    "datetime,latitude,longitude,alt,speed,gps_time,abovethreshold,csvfile,pngfile\r\n")
         measlog_thread.start()
         while self.running:
             # JUST CREATE FILES FOR STORING RESULTS
