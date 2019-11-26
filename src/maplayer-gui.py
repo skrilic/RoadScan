@@ -3,8 +3,8 @@
 __author__="slaven"
 #__date__ ="$28.05.2010. 10:51:58$"
 
-from PySide import QtGui
-from PySide.QtCore import QThread, SIGNAL
+from PySide2 import QtGui, QtWidgets
+from PySide2.QtCore import QThread, SIGNAL
 import os, sys
 import maplayerDesign
 import time
@@ -21,7 +21,7 @@ ptcsv = "csv"
 ptimg = "png"
 
 
-class KmlGeneratorWindow(QtGui.QWidget, maplayerDesign.Ui_FormKml):
+class KmlGeneratorWindow(QtWidgets.QWidget, maplayerDesign.Ui_FormKml):
 
     def __init__(self):
 
@@ -34,16 +34,16 @@ class KmlGeneratorWindow(QtGui.QWidget, maplayerDesign.Ui_FormKml):
 
 
     def open_file(self):
-        name = QtGui.QFileDialog.getOpenFileName(self, 'Open File', 'measlog.csv', "Log files (*.csv)")
+        name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File', 'measlog.csv', "Log files (*.csv)")
         self.lineEdit_input.setText(name[0])
 
     def save_file(self):
-        name = QtGui.QFileDialog.getSaveFileName(self, 'Save File', '', "KML file (*.kml)")
+        name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', "KML file (*.kml)")
         self.lineEdit_output.setText(name[0])
 
     def generate_kml(self):
         if (self.lineEdit_input.text() == "" or self.lineEdit_output.text() == ""):
-            msg = QtGui.QMessageBox()
+            msg = QtWidgets.QMessageBox()
             msg.setWindowTitle("Information")
             msg.setText("You must select input and the output file!")
             msg.exec_()
@@ -70,13 +70,13 @@ class KmlGeneratorWindow(QtGui.QWidget, maplayerDesign.Ui_FormKml):
     def done(self):
         # Reset ProgressBar
         self.progressBar.setValue(0)
-        QtGui.QMessageBox.information(self, "Done!", "KML generated!")
+        QtWidgets.QMessageBox.information(self, "Done!", "KML generated!")
 
     def close_widget(self):
-        choice = QtGui.QMessageBox.question(self, "Close the Widget",
+        choice = QtWidgets.QMessageBox.question(self, "Close the Widget",
                                             "Really want to exit?",
-                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-        if choice == QtGui.QMessageBox.Yes:
+                                            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        if choice == QtWidgets.QMessageBox.Yes:
             sys.exit()
         else:
             pass
@@ -193,7 +193,7 @@ class KmlGeneratorThread(QThread):
         return True
 
 def main():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     form = KmlGeneratorWindow()
     form.show()
     app.exec_()
