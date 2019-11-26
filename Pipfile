@@ -16,7 +16,7 @@ StdConfigParser = "*"
 matplotlib = "*"
 colorama = "==0.4.1"
 pyinstaller = "*"
-pyside = "*"
+pyside2 = "*"
 
 [requires]
 python_version = "3.7"
