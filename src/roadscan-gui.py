@@ -457,7 +457,7 @@ class AppThread:
         # TODO: Add speed, altitude and GPS time if it is possible
         measlogfile = "{}/measlog.csv".format(csvdirname)
         measlog_thread = AsyncWrite(measlogfile, "a",
-                                    "datetime,latitude,longitude,speed,altitude,gpstime,abovethreshold,csvfile,pngfile\r\n")
+                                    "datetime,latitude,longitude,abovethreshold,csvfile,pngfile,speed,altitude,gpstime\r\n")
         measlog_thread.start()
         while self.running:
             # JUST CREATE FILES FOR STORING RESULTS
@@ -525,12 +525,13 @@ class AppThread:
                     mlf1 = AsyncWrite(measlogfile, "a",
                                       "%s,%s,%s,%s,%s\r\n" % (dattim,
                                                               myposition,
-                                                              myspeed,
-                                                              myaltitude,
-                                                              mygpstime,
                                                               abovethreshold,
                                                               "{}/{}".format(csvdirname, csvfile),
-                                                              "{}/{}".format(imagedirname, pngfile))
+                                                              "{}/{}".format(imagedirname, pngfile),
+                                                              myspeed,
+                                                              myaltitude,
+                                                              mygpstime
+                                                              )
                                       )
                     mlf1.start()
             time.sleep(float(sleep))
