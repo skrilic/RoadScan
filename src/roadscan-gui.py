@@ -442,8 +442,8 @@ class AppThread:
         # Clear Frequency and Levels List
         frequencies = list()
 
-        for i in range(300):
-            frequencies.append(fstart + i * (fstop - fstart) / 301)
+        for i in range(301):
+            frequencies.append(fstart + i * (fstop - fstart) / 300)
         counter = 0
 
         datetimestring = time_stamp(gmt=True).replace(':', '-').replace(' ', '_')
@@ -454,10 +454,10 @@ class AppThread:
         os.makedirs(imagedirname)
 
         # Now, create it ...
+        table_header = "datetime,latitude,longitude,abovethreshold,speed,altitude,gpstime,datapoints"
         # TODO: Add speed, altitude and GPS time if it is possible
         measlogfile = "{}/measlog.csv".format(csvdirname)
-        measlog_thread = AsyncWrite(measlogfile, "a",
-                                    "datetime,latitude,longitude,abovethreshold,csvfile,pngfile,speed,altitude,gpstime\r\n")
+        measlog_thread = AsyncWrite(measlogfile, "a", table_header + "\r\n")
         measlog_thread.start()
         while self.running:
             # JUST CREATE FILES FOR STORING RESULTS
@@ -470,8 +470,8 @@ class AppThread:
                 myaltitude = measurement_equipment.altitude()
                 mygpstime = measurement_equipment.gpstime()
                 # print("GPS: {}".format(myposition))
-                csvfile = "%s_%s.csv" % (myposition.replace(',', '-').replace('.', '_'), filename_base)
-                pngfile = "%s.png" % filename_base
+                # csvfile = "%s_%s.csv" % (myposition.replace(',', '-').replace('.', '_'), filename_base)
+                # pngfile = "%s.png" % filename_base
 
                 results = measurement_equipment.measurement()
                 # print("Length of FSH6 Output is: {}".format(len(results)))
@@ -498,22 +498,23 @@ class AppThread:
 
                     # Files for the cycle
                     # For every cycle write to the cycle measurement file
-                    csv_thread1 = AsyncWrite("{}/{}".format(csvdirname, csvfile), "w", "i, frequency, magnitude\r\n")
-                    csv_thread1.start()
-                    k = 0
+                    # csv_thread1 = AsyncWrite("{}/{}".format(csvdirname, csvfile), "w", "i, frequency, magnitude\r\n")
+                    # csv_thread1.start()
+                    # k = 0
 
                     # print("Level, Freq. {} {}".format(len(levels), len(frequencies)))
 
-                    for lvl in levels:
-                        csv_thread2 = AsyncWrite("{}/{}".format(csvdirname, csvfile), "a",
-                                                 "{},{},{}\r\n".format(k, frequencies[k], lvl))
-                        csv_thread2.start()
-                        k += 1
+                    # for lvl in levels:
+                    #     csv_thread2 = AsyncWrite("{}/{}".format(csvdirname, csvfile), "a",
+                    #                              "{},{},{}\r\n".format(k, frequencies[k], lvl))
+                    #     csv_thread2.start()
+                    #     k += 1
 
-                    # Draw to pngfile
-                    plot_file = "%s/%s/png/%s" % (directory, datetimestring, pngfile)
+                    # # Draw to pngfile
+                    # plot_file = "%s/%s/png/%s" % (directory, datetimestring, pngfile)
 
-                    msg = "{};{};{};{};{}".format(myposition, max_min['ymax'], time_stamp(True), magn_unit, plot_file)
+                    # msg = "{};{};{};{};{}".format(myposition, max_min['ymax'], time_stamp(True), magn_unit, plot_file)
+                    msg = "{};{};{};{};{}".format(myposition, max_min['ymax'], time_stamp(True), magn_unit)
                     self.queue.put(msg)
 
                     # Play the sound
@@ -526,11 +527,12 @@ class AppThread:
                                       "%s,%s,%s,%s,%s\r\n" % (dattim,
                                                               myposition,
                                                               abovethreshold,
-                                                              "{}/{}".format(csvdirname, csvfile),
-                                                              "{}/{}".format(imagedirname, pngfile),
+                                                              # "{}/{}".format(csvdirname, csvfile),
+                                                              # "{}/{}".format(imagedirname, pngfile),
                                                               myspeed,
                                                               myaltitude,
-                                                              mygpstime
+                                                              mygpstime,
+                                                              results
                                                               )
                                       )
                     mlf1.start()
