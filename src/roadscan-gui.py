@@ -5,11 +5,11 @@ from tkinter import messagebox as tkMessageBox
 # import tkFileDialog
 # import tkMessageBox
 import threading
-from src.devices import gps_device
+from devices import gps_device
 import queue as Queue
 import os
 import configparser
-from src.measurements import *
+from measurements import *
 import matplotlib.pyplot as plt
 import threading
 import time
@@ -442,7 +442,7 @@ class AppThread:
         # Clear Frequency and Levels List
         frequencies = list()
 
-        for i in range(301):
+        for i in range(0, 301):
             frequencies.append(fstart + i * (fstop - fstart) / 300)
         counter = 0
 
@@ -484,10 +484,13 @@ class AppThread:
 
                     # Clear levels
                     levels = list()
-
+                    i = 0
                     for magnitude in results:
                         if magnitude != '':
                             levels.append(float(magnitude))
+                        else:
+                            levels.append(levels[i-1])
+                        i += 1
 
                     # Save links to measurement to file
                     max_min = findpeaks(levels)
@@ -512,9 +515,10 @@ class AppThread:
 
                     # # Draw to pngfile
                     # plot_file = "%s/%s/png/%s" % (directory, datetimestring, pngfile)
+                    plot_file = "%s/%s/png/temp.png" % (directory, datetimestring)
 
-                    # msg = "{};{};{};{};{}".format(myposition, max_min['ymax'], time_stamp(True), magn_unit, plot_file)
-                    msg = "{};{};{};{};{}".format(myposition, max_min['ymax'], time_stamp(True), magn_unit)
+                    msg = "{};{};{};{};{}".format(myposition, max_min['ymax'], time_stamp(True), magn_unit, plot_file)
+                    # msg = "{};{};{};{}".format(myposition, max_min['ymax'], time_stamp(True), magn_unit)
                     self.queue.put(msg)
 
                     # Play the sound
@@ -524,7 +528,7 @@ class AppThread:
 
                     # Global Link file
                     mlf1 = AsyncWrite(measlogfile, "a",
-                                      "%s,%s,%s,%s,%s\r\n" % (dattim,
+                                      "%s,%s,%s,%s,%s,%s,%s\r\n" % (dattim,
                                                               myposition,
                                                               abovethreshold,
                                                               # "{}/{}".format(csvdirname, csvfile),
